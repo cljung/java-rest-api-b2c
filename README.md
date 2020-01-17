@@ -1,2 +1,44 @@
 # java-rest-api-b2c
-Java REST API with B2C authentication
+This is a Java Spring Boot sample REST API that can use Azure AD B2C as its Identity Provider.
+
+## Background
+In the [samples for MSAL J](https://github.com/AzureAD/microsoft-authentication-library-for-java) there is a WebApp called [msal-b2c-web-sample](https://github.com/AzureAD/microsoft-authentication-library-for-java/tree/dev/src/samples/msal-b2c-web-sample) that is a WebApp that uses Azure AD B2C for its authentication. The sample has the possibility of calling a WebAPI to illustrate the use of JWT access token. If you read the Microsoft documentation for B2C, the WebAPI mentioned is a node.js sample. If you are looking for a way to build a Java WebAPI instead, this is that sample.
+
+## Where this sample is derived from
+MSAL (Microsoft Authentication Library) is a client side library for aquiring tokens from OIDC/OAuth sources. It is not a library to use on the WebApi side to validate access tokens received. Therefor, this source code is derived from the MSAL sample called [msal-obo-sample](https://github.com/AzureAD/microsoft-authentication-library-for-java/tree/dev/src/samples/msal-obo-sample) that demonstrates how you use the On-Behalf-Of authentication flow, but this sample has removed the calls downstreams APIs. What remains is code that uses Java Spring Boot and that wires up the Spring Boot OAuth2 libraries to an Azure AD B2C tenant and that accepts and validates JWT tokens issued by B2C. 
+
+## How to test
+First you must create your Azure AD B2C instance and either use the User Flows or built your Custom Policies with the Identity Experience Framework. Then you git clone and build the webapp [msal-b2c-web-sample](https://github.com/AzureAD/microsoft-authentication-library-for-java/tree/dev/src/samples/msal-b2c-web-sample) according to the official Microsoft instructions for the sample
+
+You need to update the application.properties file with your B2C tenant details
+```XML
+b2c.tenant=yourtenant.onmicrosoft.com
+b2c.host=yourtenant.b2clogin.com
+b2c.redirectUri=http://localhost:8080/msal4jsample/secure/aad
+b2c.api=http://localhost:8081/api/items
+b2c.api-scope=https://yourtenant.onmicrosoft.com/your-api-name/demo.read
+b2c.authority.base=https://yourtenant.b2clogin.com/tfp/yourtenant.onmicrosoft.com/
+b2c.sign-up-sign-in-authority=https://yourtenant.b2clogin.com/tfp/yourtenant.onmicrosoft.com/b2c_1a_signup_signin/
+b2c.edit-profile-authority=https://yourtenant.b2clogin.com/tfp/yourtenant.onmicrosoft.com/b2c_1a_edit_profile/
+b2c.reset-password-authority=https://yourtenant.b2clogin.com/tfp/yourtenant.onmicrosoft.com/b2c_1a_resetpassword/
+b2c.clientId=...webapp client_id...
+b2c.secret=...webapp secret/key...
+```
+
+Then you git clone this sample and update its application.properties file. 
+
+```XML
+server.port=8081
+logging.level.org.springframework.oauth2=DEBUG
+logging.level.org.springframework.jwt=DEBUG
+logging.level.org.springframework.cache=DEBUG
+security.oauth2.client.authority=https://yourtenant.b2clogin.com/tfp/yourtenant.onmicrosoft.com/
+security.oauth2.client.client-id=...api client_id...
+security.oauth2.client.client-secret=...api secret/key...
+security.oauth2.resource.id=...api for client_id...
+security.oauth2.scope.access-as-user=https://yourtenant.onmicrosoft.com/your-api-name/demo.read
+security.oauth2.resource.jwt.key-uri=https://yourtenant.b2clogin.com/yourtenant.onmicrosoft.com/discovery/v2.0/keys?p=b2c_1a_signup_signin
+security.oauth2.issuer=https://yourtenant.b2clogin.com/yourtenant-guid/v2.0/
+```
+
+If you build and run the two samples simultaneously, you will have an all Java sample of a WebApp authenticating using Azure AD B2C calling a Java WebAPI with the B2C access token
