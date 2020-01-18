@@ -42,3 +42,11 @@ security.oauth2.issuer=https://yourtenant.b2clogin.com/yourtenant-guid/v2.0/
 ```
 
 If you build and run the two samples simultaneously, you will have an all Java sample of a WebApp authenticating using Azure AD B2C calling a Java WebAPI with the B2C access token
+
+## Things to pay attention to
+
+**Scope** value to be set in application.properties for the WebApp is the long ***Value*** in portal.azure.com and have a format like this: https://yourtenant.onmicrosoft.com/your-api-name/demo.read. It is easy to get wrong, so copy-n-paste the value from the portal. In application.properties for the **WebApi** on the other hand it is ***not*** the full value but rather just the short name, like demo.read.
+
+**Secrets** from B2C may contain characters like " and $. In application.properties, you don't need to escape them as everything after the = sign is treated like the settings value by Java. But if you set the secret value in environment variables in bash, powershell or in the env section of the vscode launch.json file, remember to escape the secret characters " and $
+
+**RedirectUri** The error handeling in the WebApp around the login part isn't perfect, so if you have a B2C config error, like the RedirectUri misspelled, you will just land in the error page with no explanation. If you encounter these types of errors, run the page in Chrome with DevTools open and look at the real response from B2C to see the real error.
