@@ -45,8 +45,13 @@ If you build and run the two samples simultaneously, you will have an all Java s
 
 ## Things to pay attention to
 
-**Scope** value to be set in application.properties for the WebApp is the long ***Value*** in portal.azure.com and have a format like this: https://yourtenant.onmicrosoft.com/your-api-name/demo.read. It is easy to get wrong, so copy-n-paste the value from the portal. In application.properties for the **WebApi** on the other hand it is ***not*** the full value but rather just the short name, like demo.read.
+**Scope** value to be set in application.properties for the WebApp is the long ***Value*** in portal.azure.com and have a format like this: https://yourtenant.onmicrosoft.com/your-api-name/demo.read. It is easy to get wrong, so copy-n-paste the value from the portal. In application.properties for the **WebApi** you also need to add the long value.
 
 **Secrets** from B2C may contain characters like " and $. In application.properties, you don't need to escape them as everything after the = sign is treated like the settings value by Java. But if you set the secret value in environment variables in bash, powershell or in the env section of the vscode launch.json file, remember to escape the secret characters " and $
 
 **RedirectUri** The error handeling in the WebApp around the login part isn't perfect, so if you have a B2C config error, like the RedirectUri misspelled, you will just land in the error page with no explanation. If you encounter these types of errors, run the page in Chrome with DevTools open and look at the real response from B2C to see the real error.
+
+**Packaging** The WebApp builds to a WAR file that you deploy to Tomcat. If you prefer to run it as a .jar file or debug it in vscode, just change war to jar in the pom.xml file
+```XML
+<packaging>jar</packaging>
+```
